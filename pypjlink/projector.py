@@ -25,8 +25,8 @@ SOURCE_TYPES = {
     'RGB': '1',
     'VIDEO': '2',
     'DIGITAL': '3',
-    'STORAGE': '4',
     'NETWORK': '5',
+    'STORAGE': '4',
 }
 SOURCE_TYPES_REV = reverse_dict(SOURCE_TYPES)
 
@@ -248,4 +248,17 @@ class Projector(object):
         return param
 
     # TODO: def get_class(self): self.get('CLSS')
-    # once we know that class 2 is, and how to deal with it
+    # once we know what class 2 is, and how to deal with it
+
+    # class 1 spec: https://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf
+    # class 2 spec: https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf
+
+    # put class 2 commands down here.
+    #def get_serial_number(self):
+    #    param = self.get('SNUM')
+    #def get_software_version(self):
+    #    param = self.get('SVER')
+    #def get_lamp_spare_pn(self):
+    #    param = self.get('RLMP')
+    #def get_filter_spare_pn(self):
+    #    param = self.get('RFIL')
