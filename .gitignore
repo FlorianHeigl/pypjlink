@@ -1,6 +1,7 @@
 *.pyc
 __pycache__
 pypjlink.egg-info/
+pypjlink2.egg-info/
 /.tox/
 /dist/
 /build/
