@@ -22,22 +22,34 @@ POWER_STATES = {
 POWER_STATES_REV = reverse_dict(POWER_STATES)
 
 SOURCE_TYPES = {
-    'RGB': '1',
-    'VIDEO': '2',
-    'DIGITAL': '3',
-    'NETWORK': '5',
-    'STORAGE': '4',
+    'RGB/VGA':  '1',
+    'VIDEO':    '2',
+    'DIGITAL':  '3',
+    'STORAGE':  '4',
+    'NETWORK':  '5',
+
+# Benq
+#11 = VGA1
+#12 = VGA2
+#21 = SVideo
+#22 = CVBS
+#31 = HDMI
+#51 = CARD_READER
+#52 = LAN DISPLAY
+#53 = USB DISPLAY
+
 }
 SOURCE_TYPES_REV = reverse_dict(SOURCE_TYPES)
 
 MUTE_VIDEO = 1
 MUTE_AUDIO = 2
 MUTE_STATES_REV = {
-    '11': (True, False),
-    '20': (False, False),
-    '21': (False, True),
-    '31': (True, True),
-    '30': (False, False),
+    '10': (False, False),  # video mute off
+    '11': (True, False),   # video mute on
+    '20': (False, False),  # audio mute off
+    '21': (False, True),   # audio mute on
+    '30': (False, False),  # video and audio mute off
+    '31': (True, True),    # video and audio mute on
 }
 
 ERROR_STATES_REV = {
@@ -128,14 +140,14 @@ class Projector(object):
         # but we don't care about the value if we did
         return True
 
-    def get(self, body):
-        success, response = protocol.send_command(self.f, body, '?', self.encoding)
+    def get(self, body, pjversion=1):
+        success, response = protocol.send_command(self.f, body, '?', self.encoding, pjversion)
         if not success:
             raise ProjectorError(response)
         return response
 
-    def set(self, body, param):
-        success, response = protocol.send_command(self.f, body, param, self.encoding)
+    def set(self, body, param, pjversion=1):
+        success, response = protocol.send_command(self.f, body, param, self.encoding, pjversion)
         if not success:
             raise ProjectorError(response)
         assert response == 'OK'
@@ -248,17 +260,20 @@ class Projector(object):
         return param
 
     # TODO: def get_class(self): self.get('CLSS')
-    # once we know what class 2 is, and how to deal with it
+    # once we know that class 2 is, and how to deal with it
 
     # class 1 spec: https://pjlink.jbmia.or.jp/english/data/5-1_PJLink_eng_20131210.pdf
     # class 2 spec: https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf
-
-    # put class 2 commands down here.
-    #def get_serial_number(self):
-    #    param = self.get('SNUM')
-    #def get_software_version(self):
-    #    param = self.get('SVER')
-    #def get_lamp_spare_pn(self):
-    #    param = self.get('RLMP')
+    def get_serial_number(self):
+        param = self.get('SNUM', pjversion=2)
+        assert len(param) <= 32
+        return param
+    def get_software_version(self):
+        param = self.get('SVER', pjversion=2)
+        assert len(param) <= 32
+        return param
+    def get_lamp_spare_pn(self):
+        param = self.get('RLMP', pjversion=2)
     #def get_filter_spare_pn(self):
     #    param = self.get('RFIL')
+
