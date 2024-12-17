@@ -14,13 +14,14 @@ def read_until(f, term, encoding):
         data = data.decode(encoding)
     return data
 
-def to_binary(body, param, sep=' '):
+def to_binary(body, param, pjversion, sep=' '):
     assert body.isupper()
 
     assert len(body) == 4
     assert len(param) <= 128
 
-    return '%1' + body + sep + param + '\r'
+    return "%%%d" % pjversion + body + sep + param + '\r'
+
 
 def parse_response(f, encoding, data=''):
     if len(data) < 7:
@@ -29,9 +30,9 @@ def parse_response(f, encoding, data=''):
     header = data[0]
     assert header == '%'
 
-    version = data[1]
-    # only class 1 is currently defined
-    assert version == '1'
+    pjversion = data[1]
+    # only class 1 is currently defined, trying to add class 2
+    assert pjversion in [ '1', '2' ]
 
     body = data[2:6]
     # commands are case-insensitive, but let's turn them upper case anyway
@@ -63,8 +64,8 @@ ERRORS = {
     'ERR4': 'projector failure',
 }
 
-def send_command(f, req_body, req_param, encoding):
-    data = to_binary(req_body, req_param)
+def send_command(f, req_body, req_param, encoding, pjversion):
+    data = to_binary(req_body, req_param, pjversion)
     f.write(data)
     f.flush()
 
